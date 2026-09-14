@@ -1,0 +1,177 @@
+/* Shared styles for everydaysystems.com. Fonts and textures match podcast.everydaysystems.com. */
+@import url("/assets/fonts/fonts.css");
+
+:root {
+  --ink: #2a2724;
+  --muted: #6b655d;
+  --faint: #8f887e;
+  --line: #ddd6cb;
+  --soft: #f3efe8;
+  --link: #1a5b9c;
+  --serif: "Libre Caslon Text", Georgia, "Times New Roman", serif;
+  --sans: "Libre Franklin", Arial, Helvetica, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 20px;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.6;
+  background-image: url(/assets/images/random_grey_variations.png);
+}
+
+#main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 26px 32px 22px;
+  background-image: url(/assets/images/white_texture.png);
+  border-radius: 11px;
+}
+
+h1, h2, h3 {
+  font-family: var(--serif);
+  font-weight: normal;
+  line-height: 1.25;
+}
+
+h1 { font-size: 150%; margin: 0 0 .7em; }
+h2 { font-size: 120%; margin: 1.7em 0 .5em; }
+h3 { font-size: 105%; margin: 1.4em 0 .4em; }
+
+p { margin: 0 0 1em; }
+
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 2em 0;
+}
+
+img { max-width: 100%; height: auto; }
+
+ul, ol { padding-left: 1.4em; }
+li { margin: .35em 0; }
+
+blockquote {
+  margin: 1em 0 1em 1em;
+  padding-left: 1em;
+  border-left: 3px solid var(--line);
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* Archived messages and the disclaimer keep their line breaks but wrap on phones. */
+pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+pre.fineprint {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #3f3a35;
+}
+
+/* Content tables (the problem index, message headers). */
+table {
+  border-collapse: collapse;
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.4;
+  margin: .6em 0 1.2em;
+}
+
+th, td {
+  padding: 6px 14px 6px 0;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+thead th, tr:first-child th:not([scope="row"]) { border-bottom: 1px solid var(--line); }
+.index-table td { border-bottom: 1px solid #ece7df; }
+.index-table th { border-bottom: 1px solid var(--line); }
+.index-table tr:last-child td { border-bottom: 0; }
+
+/* Home page masthead. */
+.masthead {
+  text-align: center;
+  margin: 6px 0 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.masthead h1 {
+  font-size: 250%;
+  letter-spacing: .01em;
+  margin: 0 0 .15em;
+}
+
+.masthead .tagline {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-style: italic;
+  font-size: 108%;
+}
+
+.site-nav {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.site-nav a { color: var(--muted); margin: 0 6px; }
+.site-nav a:hover { color: var(--link); text-decoration: none; }
+.site-nav .sep { color: var(--line); }
+
+/* Subpage title acts as a breadcrumb. */
+.breadcrumb { font-size: 92%; color: var(--muted); margin-bottom: .3em; }
+
+/* Small helpers carried over from the old inline styles. */
+.no { color: #9b3a2a; }
+.yes { color: #2f7040; }
+.new { color: #9b3a2a; font-weight: bold; }
+.title { font-weight: bold; }
+.date { font-size: 75%; }
+.tiny { font-family: var(--sans); font-size: 11px; }
+
+.site-footer {
+  margin-top: 2.2em;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 12.5px;
+}
+
+.site-footer p { margin: .3em 0; }
+.site-footer hr { display: none; }
+
+@media (max-width: 640px) {
+  body { padding: 8px; font-size: 16px; }
+  #main { padding: 18px 16px 14px; border-radius: 8px; }
+  .masthead h1 { font-size: 200%; }
+  th, td { padding-right: 10px; }
+  th { white-space: normal; }
+  .index-table { width: 100%; }
+}
