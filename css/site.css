@@ -38,9 +38,9 @@ h1, h2, h3 {
   line-height: 1.25;
 }
 
-h1 { font-size: 150%; margin: 0 0 .7em; }
-h2 { font-size: 120%; margin: 1.7em 0 .5em; }
-h3 { font-size: 105%; margin: 1.4em 0 .4em; }
+h1 { font-size: 180%; margin: 0 0 .6em; }
+h2 { font-size: 140%; margin: 1.5em 0 .45em; }
+h3 { font-size: 115%; margin: 1.3em 0 .4em; }
 
 p { margin: 0 0 1em; }
 
@@ -120,7 +120,7 @@ thead th, tr:first-child th:not([scope="row"]) { border-bottom: 1px solid var(--
 }
 
 .masthead h1 {
-  font-size: 250%;
+  font-size: 280%;
   letter-spacing: .01em;
   margin: 0 0 .15em;
 }
@@ -170,7 +170,9 @@ thead th, tr:first-child th:not([scope="row"]) { border-bottom: 1px solid var(--
 @media (max-width: 640px) {
   body { padding: 8px; font-size: 16px; }
   #main { padding: 18px 16px 14px; border-radius: 8px; }
-  .masthead h1 { font-size: 200%; }
+  .masthead h1 { font-size: 220%; }
+  h1 { font-size: 160%; }
+  h2 { font-size: 130%; }
   th, td { padding-right: 10px; }
   th { white-space: normal; }
   .index-table { width: 100%; }
