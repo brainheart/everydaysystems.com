@@ -1,0 +1,56 @@
+{
+  "coverage_note": "First mentioned means the earliest dated source indexed here, not a proven date of invention or first publication. Podcasts use the shared episode tags. Web coverage is a curated selection of dated archive posts; undated home pages are linked from system names but are not assigned invented dates.",
+  "homepages": {
+    "no-s-diet": "https://nosdiet.com/",
+    "shovelglove": "https://shovelglove.com/",
+    "urban-ranger": "https://urbanranger.com/",
+    "glass-ceiling": "https://everydaysystems.com/glassceiling/",
+    "weekend-luddite": "https://everydaysystems.com/weekendluddite/",
+    "study-habit": "https://studyhabit.everydaysystems.com/",
+    "habitcal": "https://habitcal.everydaysystems.com/"
+  },
+  "pages": [
+    {
+      "date": "2002-06-11",
+      "title": "New poll for nosdiet",
+      "url": "https://nosdiet.com/group/1.html",
+      "systems": ["no-s-diet"],
+      "evidence": "Dated archive post asks which of snacks, sweets, or seconds is toughest."
+    },
+    {
+      "date": "2003-04-09",
+      "title": "Added links to my resume",
+      "url": "https://nosdiet.com/group/8.html",
+      "systems": ["no-s-diet", "shovelglove"],
+      "evidence": "Dated post explicitly links nosdiet.com and shovelglove.com."
+    },
+    {
+      "date": "2003-07-16",
+      "title": "Re: moments of S-ing",
+      "url": "https://nosdiet.com/group/33.html",
+      "systems": ["glass-ceiling"],
+      "evidence": "Reinhard describes two drinks as his glass ceiling."
+    },
+    {
+      "date": "2003-11-22",
+      "title": "Shovelgloving",
+      "url": "https://nosdiet.com/group/215.html",
+      "systems": ["shovelglove", "urban-ranger", "no-s-diet"],
+      "evidence": "Post recommends Urban Ranger and Shovelgloving as complements to No S."
+    },
+    {
+      "date": "2004-07-06",
+      "title": "Let's talk: systems in the lab",
+      "url": "https://everydaysystems.com/group/6.html",
+      "systems": ["glass-ceiling", "low-smoking", "weekend-luddite", "audiodidact"],
+      "evidence": "Reinhard explains each system under its own heading."
+    },
+    {
+      "date": "2004-12-09",
+      "title": "Re: feeling weak — habit traffic lights",
+      "url": "https://nosdiet.com/group/2364.html",
+      "systems": ["habit-traffic-light"],
+      "evidence": "Reinhard asks habit traffic lighters to share their experiences."
+    }
+  ]
+}

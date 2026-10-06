@@ -1,0 +1,86 @@
+// Run against a local HTTP server: node tests/systems.browser.cjs [base URL]
+// Requires Playwright (available globally in the development environment).
+const {chromium} = require('playwright');
+const assert = require('node:assert/strict');
+const fs = require('node:fs/promises');
+const base = process.argv[2] || 'http://127.0.0.1:8765';
+(async () => {
+  const browser = await chromium.launch({headless:true});
+  try {
+    const context = await browser.newContext({viewport:{width:1440,height:1050}});
+    context.setDefaultTimeout(10000);
+    // Deliberately offline metadata tests the saved fallback without timing races.
+    await context.route('https://podcast.everydaysystems.com/metadata/**', route => route.abort());
+    const page = await context.newPage(), errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    page.on('response', response => { if (response.url().startsWith(base) && response.status() >= 400) errors.push(`${response.status()}: ${response.url()}`); });
+    await page.goto(base + '/systems/');
+    await page.waitForFunction(() => document.querySelector('#data-status').textContent.includes('saved snapshot'));
+    assert.equal(await page.locator('#rows tr').count(),25);
+    assert.match(await page.locator('#rows tr').first().textContent(), /No S Diet/);
+    assert.ok(await page.locator('#no-s-diet').evaluate(el=>el.offsetHeight < 110));
+    await page.screenshot({path:'/tmp/systems-desktop.png',fullPage:true});
+    const cluster = page.locator('#no-s-diet [data-cluster]').first();
+    await cluster.hover();
+    assert.ok(await page.locator('#tooltip').isVisible());
+    assert.ok(await page.locator('#tooltip a').count() > 1);
+    await page.locator('#tooltip a').first().hover();
+    assert.ok(await page.locator('#tooltip').isVisible());
+    await page.keyboard.press('Escape');
+    await cluster.focus();
+    await page.keyboard.press('Enter');
+    assert.ok(await page.locator('#tooltip a').first().evaluate(el => document.activeElement === el));
+    await page.keyboard.press('Escape');
+    assert.ok(await cluster.evaluate(el => document.activeElement === el));
+    assert.equal(await page.locator('#tooltip').isVisible(),false);
+    const mark = page.locator('#rows a.mark').first();
+    await mark.hover();
+    assert.match(await page.locator('#tooltip').textContent(), /\d{4}-\d{2}-\d{2}/);
+    assert.match(await mark.getAttribute('href'), /^https:\/\//);
+    await page.locator('#families [data-family="soul"]').click();
+    assert.equal(await page.locator('#rows tr').count(),20);
+    await page.locator('[data-sort="name"]').click();
+    const shared = page.url();
+    const fresh = await context.newPage(); await fresh.goto(shared);
+    assert.equal(await fresh.locator('#rows tr').count(),20);
+    assert.match(await fresh.locator('#rows tr').first().textContent(), /Allocation Mind/);
+    await fresh.goto(base+'/systems/?q=shovel'); await fresh.goBack();
+    assert.equal(await fresh.locator('#rows tr').count(),20);
+    await page.locator('#clear').click();
+    await page.locator('[data-page="next"]').click();
+    assert.match(await page.locator('#page-label').textContent(),/Page 2 of 2/);
+    const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#download').click()]);
+    const output = await fs.readFile(await download.path(),'utf8');
+    assert.ok(output.includes('No S Diet') && output.includes('Zeno'));
+    await page.locator('#search').fill('nothing-will-match-xyz');
+    assert.match(await page.locator('#results').textContent(),/0 of 50/);
+    assert.match(await page.locator('#rows').textContent(),/No systems match/);
+    await page.locator('#clear').click();
+    await page.locator('#to').fill('2003-12-31');
+    assert.match(await page.locator('#results').textContent(),/4 of 50/);
+    await page.locator('#clear').click();
+    await page.locator('[data-sort="first"]').click();
+    await page.setViewportSize({width:390,height:844});
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth));
+    assert.ok(await page.locator('.table-wrap').evaluate(el=>el.scrollWidth > el.clientWidth));
+    await page.locator('.table-wrap').evaluate(el=>{el.scrollLeft=el.scrollWidth;});
+    await page.locator('#no-s-diet .references summary').click();
+    assert.equal(await page.locator('#no-s-diet .references li').count(),68);
+    await page.screenshot({path:'/tmp/systems-mobile.png',fullPage:true});
+    assert.deepEqual(errors,[]);
+    // Verify a new episode arriving from live metadata updates existing rows.
+    const live = await browser.newContext();
+    const snapshot = await page.locator('#systems-data').textContent().then(JSON.parse);
+    snapshot.episodes.push({number:999,title:'Future sync test',release_date:'2026-10-06',systems:{focus:['no-s-diet'],mentions:[]}});
+    await live.route('https://podcast.everydaysystems.com/metadata/**', route => route.fulfill({json:route.request().url().includes('systems.json') ? snapshot.catalog : snapshot.episodes}));
+    const updated = await live.newPage(); await updated.goto(base+'/systems/');
+    await updated.waitForFunction(()=>document.querySelector('#data-status').textContent.includes('refreshed'));
+    assert.match(await updated.locator('#no-s-diet .references summary').textContent(),/69 references/);
+    await updated.locator('#search').fill('Future sync test');
+    assert.match(await updated.locator('#results').textContent(),/1 of 50/);
+    const nojs = await browser.newContext({javaScriptEnabled:false});
+    const staticPage = await nojs.newPage(); await staticPage.goto(base+'/systems/');
+    assert.equal(await staticPage.locator('#rows tr').count(),50);
+    console.log('Passed: compact timelines, hover/keyboard clusters, source links, filters, sort, fresh deep links, Back, paging, full CSV, empty results, mobile scrolling, live updates, offline fallback, and no-JS content.');
+  } finally { await browser.close(); }
+})().catch(error => { console.error(error); process.exitCode=1; });
