@@ -110,7 +110,7 @@
     }
     const span = visible.length ? `<span class="life-span" aria-hidden="true" style="left:${position(visible[0].date)}%;width:${position(visible.at(-1).date) - position(visible[0].date)}%"></span>` : '';
     const activityLabel = visible.length ? `; indexed activity ${visible[0].date} to ${visible.at(-1).date}` : '; no dated activity through today';
-    return `<div class="timeline" aria-label="${escape(row.name)} reference timeline${activityLabel}">${span}${marks.join('')}</div><details class="references"><summary>View sources</summary><a class="podcast-drill" href="${PODCAST}/?systems=${encodeURIComponent(row.id)}">Filter podcast to this system ↗</a><ol>${row.events.map(e => `<li><a href="${escape(e.url)}">${escape(e.title)}</a><small>${e.date} · ${kindLabels[e.kind]}</small></li>`).join('')}</ol></details>`;
+    return `<div class="timeline" aria-label="${escape(row.name)} reference timeline${activityLabel}">${span}${marks.join('')}</div><section id="sources-${escape(row.id)}" class="references" aria-label="Sources for ${escape(row.name)}" tabindex="-1" hidden><div class="source-heading"><strong>${escape(row.name)} · ${row.activity} sources</strong><button type="button" data-close-sources="${escape(row.id)}">Close</button></div><a class="podcast-drill" href="${PODCAST}/?systems=${encodeURIComponent(row.id)}">Filter podcast to this system ↗</a><ol>${row.events.map(e => `<li><a href="${escape(e.url)}">${escape(e.title)}</a><small>${e.date} · ${kindLabels[e.kind]}</small></li>`).join('')}</ol></section>`;
   }
 
   function syncURL() {
@@ -121,7 +121,7 @@
   }
 
   function render(sync = true) {
-    $('tooltip').hidden = true;
+    hideTooltip();
     clusters.clear();
     scale = bounds(rows);
     filtered = selectRows(rows, state);
@@ -133,7 +133,6 @@
     $('chips').innerHTML = chips.map(([key, label]) => `<button data-remove="${escape(key)}" aria-label="Remove filter ${escape(label)}">${escape(label)} ×</button>`).join('');
     $('clear').disabled = chips.length === 0;
     $('results').textContent = `${filtered.length} of ${rows.length} systems` + (filtered.length ? ` · ${1 + (state.page - 1) * state.size}–${Math.min(state.page * state.size, filtered.length)}` : ' · No matches');
-    $('scale-label').textContent = `${scale.year}–today`;
     const years = [scale.year];
     for (let y = Math.ceil((scale.year + 1) / 5) * 5; y < new Date(scale.end).getUTCFullYear() - 1; y += 5) years.push(y);
     $('axis').innerHTML = years.map(y => `<span style="left:${2 + 96 * (day(`${y}-01-01`) - scale.start) / (scale.end - scale.start || 1)}%">${y}</span>`).join('') + '<span style="left:98%">Today</span>';
@@ -142,13 +141,32 @@
       th.setAttribute('aria-sort', active ? state.dir === 'asc' ? 'ascending' : 'descending' : 'none');
       th.querySelector('.sort-indicator').textContent = active ? state.dir === 'asc' ? '▲' : '▼' : '↕';
     });
-    $('rows').innerHTML = filtered.slice((state.page - 1) * state.size, state.page * state.size).map(r => `<tr id="${escape(r.id)}" style="--tag-color:${r.color}"><td class="system-name"><a href="${escape(r.url)}">${escape(r.name)}</a></td><td><button class="family row-family" data-family="${escape(r.group)}" aria-pressed="${state.families.includes(r.group)}">${escape(r.family)}</button></td><td class="first-date">${r.first ? `<a href="${escape(r.events[0].url)}" title="${escape(r.events[0].title)} · ${kindLabels[r.events[0].kind]}">${r.first}</a>` : 'Unknown'}</td><td class="reference-count">${r.activity.toLocaleString()}</td><td class="timeline-cell">${timeline(r)}</td></tr>`).join('') || '<tr><td colspan="5" class="empty">No systems match these filters. Try clearing a filter.</td></tr>';
+    $('rows').innerHTML = filtered.slice((state.page - 1) * state.size, state.page * state.size).map(r => `<tr id="${escape(r.id)}" style="--tag-color:${r.color}"><td class="system-name"><a href="${escape(r.url)}">${escape(r.name)}</a></td><td><button class="family row-family" data-family="${escape(r.group)}" aria-pressed="${state.families.includes(r.group)}">${escape(r.family)}</button></td><td class="first-date">${r.first ? `<a href="${escape(r.events[0].url)}" title="${escape(r.events[0].title)} · ${kindLabels[r.events[0].kind]}">${r.first}</a>` : 'Unknown'}</td><td class="reference-count">${r.activity ? `<a href="#sources-${escape(r.id)}" data-sources="${escape(r.id)}" aria-controls="sources-${escape(r.id)}" aria-expanded="false" aria-label="View ${r.activity} sources for ${escape(r.name)}">${r.activity.toLocaleString()}</a>` : '0'}</td><td class="timeline-cell">${timeline(r)}</td></tr>`).join('') || '<tr><td colspan="5" class="empty">No systems match these filters. Try clearing a filter.</td></tr>';
+    const linkedSources = document.getElementById(location.hash.slice(1));
+    if (linkedSources?.classList.contains('references')) setSources(linkedSources, true, false);
     $('pagination').hidden = totalPages <= 1;
     $('page-label').textContent = `Page ${state.page} of ${totalPages}`;
     document.querySelectorAll('[data-page]').forEach(b => { b.disabled = ['first', 'prev'].includes(b.dataset.page) ? state.page === 1 : state.page === totalPages; });
     if (sync) syncURL();
   }
   function change() { state.page = 1; render(); }
+  function setSources(panel, open, focus = true) {
+    panel.hidden = !open;
+    const link = document.querySelector(`[data-sources][aria-controls="${CSS.escape(panel.id)}"]`);
+    link?.setAttribute('aria-expanded', String(open));
+    if (!open && location.hash === '#' + panel.id) history.replaceState(null, '', location.pathname + location.search);
+    if (focus) {
+      const target = open ? panel : link;
+      target?.focus({preventScroll:true});
+      target?.scrollIntoView({block:'nearest', inline:'nearest'});
+    }
+  }
+  document.addEventListener('click', e => {
+    const link = e.target.closest('[data-sources]'), close = e.target.closest('[data-close-sources]');
+    if (link && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) { e.preventDefault(); const panel = $(link.getAttribute('aria-controls')); setSources(panel, panel.hidden); }
+    if (close) setSources(close.closest('.references'), false);
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { const panel = e.target.closest('.references'); if (panel) setSources(panel, false); } });
   $('controls').hidden = false; $('actions').hidden = false;
   $('coverage-note').textContent = data.pages.coverage_note;
   $('search').addEventListener('input', e => { state.q = e.target.value.slice(0, 200); change(); });
@@ -177,15 +195,20 @@
     activeMark?.removeAttribute('aria-describedby');
   }
   function showTooltip(e) {
-    const mark = e.target.closest('[data-tooltip], [data-cluster]'); if (!mark) return;
+    const mark = e.target.closest('[data-tooltip], [data-cluster], [data-legend]'); if (!mark) return;
     clearTimeout(hideTimer);
     if (activeMark !== mark) hideTooltip();
     activeMark = mark;
     const tip = $('tooltip'), events = clusters.get(mark.dataset.cluster);
     tip.setAttribute('role', events ? 'dialog' : 'tooltip');
-    tip.setAttribute('aria-label', events ? 'Nearby references' : 'Source information');
+    tip.setAttribute('aria-label', events ? 'Nearby references' : mark.hasAttribute('data-legend') ? 'Timeline legend' : 'Source information');
     if (events) {
       tip.innerHTML = `<strong>${events.length} nearby references</strong><ul>${events.map(item => `<li><a href="${escape(item.url)}">${escape(item.title)}</a><small>${item.date} · ${kindLabels[item.kind]}</small></li>`).join('')}</ul>`;
+      mark.setAttribute('aria-expanded', 'true');
+    } else if (mark.hasAttribute('data-legend')) {
+      tip.replaceChildren($('timeline-legend').content.cloneNode(true));
+      tip.querySelector('[data-scale-label]').textContent = `${scale.year}–today`;
+      mark.setAttribute('aria-describedby', 'tooltip');
       mark.setAttribute('aria-expanded', 'true');
     } else { tip.textContent = mark.dataset.tooltip; mark.setAttribute('aria-describedby', 'tooltip'); }
     tip.hidden = false;
@@ -194,9 +217,9 @@
     tip.style.top = `${Math.max(8, Math.min(rect.bottom + 5, innerHeight - tip.offsetHeight - 8))}px`;
   }
   document.addEventListener('pointerover', showTooltip); document.addEventListener('focusin', showTooltip);
-  document.addEventListener('click', e => { if (e.target.closest('[data-cluster]')) { showTooltip(e); $('tooltip').querySelector('a')?.focus(); } else if (!e.target.closest('#tooltip')) hideTooltip(); });
+  document.addEventListener('click', e => { if (e.target.closest('[data-cluster]')) { showTooltip(e); $('tooltip').querySelector('a')?.focus(); } else if (e.target.closest('[data-legend]')) showTooltip(e); else if (!e.target.closest('#tooltip')) hideTooltip(); });
   for (const type of ['pointerout', 'focusout']) document.addEventListener(type, e => {
-    if (e.target.closest('[data-tooltip], [data-cluster], #tooltip') && !e.relatedTarget?.closest?.('#tooltip')) hideTimer = setTimeout(hideTooltip, 180);
+    if (e.target.closest('[data-tooltip], [data-cluster], [data-legend], #tooltip') && !e.relatedTarget?.closest?.('#tooltip')) hideTimer = setTimeout(hideTooltip, 180);
   });
   $('tooltip').addEventListener('pointerover', () => clearTimeout(hideTimer));
   $('tooltip').addEventListener('focusin', () => clearTimeout(hideTimer));

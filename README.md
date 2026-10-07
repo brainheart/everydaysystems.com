@@ -18,6 +18,10 @@ no colored interval. CSV uses the same five columns, retaining the date and
 source URL together in First Mentioned. Bump the stylesheet and script `?v=`
 in the template when changing either asset, then rebuild.
 
+Reference counts open the corresponding source list (Close or Escape returns
+focus to the count). The timeline heading shows its legend on hover, keyboard
+focus, or tap, keeping the table compact.
+
 `/systems/` is one row per system, using the podcast's stable IDs, names,
 families, colors, and episode relationships. The browser refreshes both
 `https://podcast.everydaysystems.com/metadata/{systems,episodes}.json` together
