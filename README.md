@@ -10,6 +10,14 @@ stylesheet changes so GitHub Pages' CDN serves the new version.
 
 ## Systems explorer
 
+The table shows system, family, a first-mentioned date linking to its source,
+total References (sortable), and a shared timeline. The family-colored band
+spans the first through latest dated reference, with gray outside that interval.
+Single-date activity uses a narrow marker; systems without dated sources have
+no colored interval. CSV uses the same five columns, retaining the date and
+source URL together in First Mentioned. Bump the stylesheet and script `?v=`
+in the template when changing either asset, then rebuild.
+
 `/systems/` is one row per system, using the podcast's stable IDs, names,
 families, colors, and episode relationships. The browser refreshes both
 `https://podcast.everydaysystems.com/metadata/{systems,episodes}.json` together

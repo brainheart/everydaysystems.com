@@ -47,6 +47,14 @@ test('timeline uses earliest indexed year through today, never future publicatio
   assert.equal(scale.start,Date.parse('2002-01-01T00:00:00Z'));
   assert.equal(scale.end,Date.parse('2026-10-06T00:00:00Z'));
 });
+test('reference totals deduplicate a dated source and sort numerically', () => {
+  const rows = derive(catalog,episodes,{...pages,pages:[...pages.pages,...pages.pages]});
+  assert.equal(rows[0].activity,3);
+  const state = readState('?sort=activity',catalog.groups);
+  assert.equal(state.dir,'desc');
+  assert.deepEqual(selectRows(rows,state).map(r=>r.activity),[3,1,0]);
+  assert.equal(readState('?sort=source',catalog.groups).sort,'first');
+});
 test('CSV exports every selected row and preserves titles, dates and source URLs', () => {
   const output = csv(derive(catalog,episodes,pages));
   assert.ok(output.includes('Later, ""episode""')); // Part of the timeline cell.

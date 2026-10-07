@@ -31,13 +31,13 @@ def build(podcast_root):
             rel = e.get('systems', {})
             if s['id'] in rel.get('focus', []) + rel.get('mentions', []) and e.get('release_date'):
                 events.append((e['release_date'], f"#{e['number']}: {e['title']}", f"https://podcast.everydaysystems.com/episode/{e['number']}/"))
-        events.sort()
+        events = sorted({(event[2], event[0]): event for event in events}.values())
         first = events[0] if events else None
         url = pages['homepages'].get(s['id'], first[2] if first else f"https://podcast.everydaysystems.com/?systems={s['id']}")
         row = f'<tr><td><a href="{escape(url)}">{escape(s["name"])}</a></td><td>{escape(groups[s["group"]]["label"])}</td>'
-        row += f'<td>{first[0] if first else "Unknown"}</td><td>'
-        row += f'<a href="{escape(first[2])}">{escape(first[1])}</a>' if first else 'No dated source'
-        row += f'</td><td>{len(events)} indexed references. Enable JavaScript for the timeline.</td></tr>'
+        row += '<td class="first-date">'
+        row += f'<a href="{escape(first[2])}" title="{escape(first[1])}">{first[0]}</a>' if first else 'Unknown'
+        row += f'</td><td class="reference-count">{len(events)}</td><td>Enable JavaScript for the timeline.</td></tr>'
         rows.append((first[0] if first else '9999', s['id'], row))
     payload = json.dumps({'catalog': catalog, 'episodes': episodes, 'pages': pages, 'snapshot_date': date.today().isoformat()}, ensure_ascii=False).replace('</', '<\\/')
     template = (ROOT / 'scripts/systems_template.html').read_text()

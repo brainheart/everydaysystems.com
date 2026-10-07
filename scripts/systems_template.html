@@ -7,8 +7,8 @@
   <meta name="description" content="Explore Everyday Systems by family, first documented mention, and a shared timeline of podcasts and web pages.">
   <link rel="canonical" href="https://everydaysystems.com/systems/">
   <link rel="stylesheet" href="assets/fonts/fonts.css">
-  <link rel="stylesheet" href="style.css">
-  <script defer src="app.js"></script>
+  <link rel="stylesheet" href="style.css?v=2">
+  <script defer src="app.js?v=2"></script>
 </head>
 <body><main id="main">
   <header class="page-head"><h1><a href="/">Everyday Systems</a> <span>/ Systems</span></h1>
@@ -25,18 +25,18 @@
     <div id="chips" class="chips" aria-label="Active filters"></div>
   </section>
   <div class="results-bar"><span id="results" role="status">Systems and their earliest indexed references</span><div class="actions" id="actions" hidden><label>Rows <select id="page-size"><option>25</option><option>50</option><option>100</option></select></label><button id="download" type="button">Download CSV</button></div></div>
-  <p class="legend"><span>● Podcast focus</span><span>○ Podcast mention</span><span>◆ Web page / archive</span><span>Numbered marks open groups of references.</span><span>Shared scale: <b id="scale-label">2002–today</b>.</span></p>
+  <p class="legend"><span>● Podcast focus</span><span>○ Podcast mention</span><span>◆ Web page / archive</span><span>Color spans first to latest reference; gray lies outside.</span><span>Shared scale: <b id="scale-label">2002–today</b>.</span></p>
   <div class="table-wrap" tabindex="0" aria-label="Systems table; scroll horizontally on small screens">
     <table><caption>Everyday Systems, earliest indexed mentions, and podcast and page timelines</caption><thead><tr>
       <th scope="col" data-key="name"><button type="button" data-sort="name">System <span class="sort-indicator"></span></button></th>
       <th scope="col" data-key="family"><button type="button" data-sort="family">System family <span class="sort-indicator"></span></button></th>
       <th scope="col" data-key="first"><button type="button" data-sort="first" title="Earliest dated source indexed here; click to sort">First mentioned <span class="sort-indicator"></span></button></th>
-      <th scope="col" data-key="source"><button type="button" data-sort="source">First mention page <span class="sort-indicator"></span></button></th>
-      <th scope="col" data-key="activity"><button type="button" data-sort="activity" title="Sort by number of indexed podcast and web references">Podcast &amp; page timeline <span class="sort-indicator"></span></button><div id="axis" class="axis" aria-hidden="true"></div></th>
+      <th scope="col" data-key="activity" class="numeric"><button type="button" data-sort="activity" title="Total indexed podcast and web references. Click to sort by count.">References <span class="sort-indicator"></span></button></th>
+      <th scope="col"><div class="header-label">Podcast &amp; page timeline</div><div id="axis" class="axis" aria-hidden="true"></div></th>
     </tr></thead><tbody id="rows"><!--SYSTEM_ROWS--></tbody></table>
   </div>
   <nav id="pagination" class="pagination" aria-label="Result pages" hidden><button data-page="first">First</button><button data-page="prev">Previous</button><span id="page-label"></span><button data-page="next">Next</button><button data-page="last">Last</button></nav>
-  <details class="coverage"><summary>About the dates and timeline</summary><p id="coverage-note"></p><p>Hover or focus a mark for its title and date; click to open the source. Numbered marks group nearby references: hover, focus, or tap to choose a source. Podcast focus, podcast mention, and web references use separate tracks. Expand “references” for the full readable list. A line joins the first and latest reference; it does not imply continuous activity. Family colors match the podcast table.</p><p>The timeline starts in the year of the earliest indexed source and ends today. Earlier sources can be added as they are verified.</p></details>
+  <details class="coverage"><summary>About the dates and timeline</summary><p id="coverage-note"></p><p>Hover or focus a mark for its title and date; click to open the source. Numbered marks group nearby references: hover, focus, or tap to choose a source. Podcast focus, podcast mention, and web references use separate tracks. Expand “View sources” for the full readable list. The colored band runs from the first to the latest reference, with gray before and after; it shows the span of documented activity, not continuous use. A single dated reference has a narrow colored marker. Family colors match the podcast table.</p><p>References counts the indexed podcast episodes and web pages for each system, counting each source once per date. Click the column heading to sort by total activity. The timeline starts in the year of the earliest indexed source and ends today. Earlier sources can be added as they are verified.</p></details>
   <p id="data-status" class="data-status" role="status">Saved metadata snapshot.</p>
   <noscript><p>Showing the saved systems list. Enable JavaScript for filtering, sorting, live metadata updates, and interactive timelines.</p></noscript>
   <footer>By Reinhard Engels · <a href="https://podcast.everydaysystems.com/">Explore the podcast</a></footer>

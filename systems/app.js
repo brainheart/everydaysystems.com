@@ -46,7 +46,8 @@
     state.q = (p.get('q') || '').slice(0, 200);
     state.families = [...new Set((p.get('families') || '').split(','))].filter(id => groups.some(g => g.id === id));
     for (const key of ['from', 'to']) state[key] = validDate(p.get(key)) ? p.get(key) : '';
-    state.sort = keys.includes(p.get('sort')) ? p.get('sort') : defaults.sort;
+    // Old links that sorted the separate source-title column now sort its date.
+    state.sort = keys.includes(p.get('sort')) && p.get('sort') !== 'source' ? p.get('sort') : defaults.sort;
     state.dir = ['asc', 'desc'].includes(p.get('dir')) ? p.get('dir') : state.sort === 'activity' ? 'desc' : 'asc';
     state.size = [25, 50, 100].includes(Number(p.get('size'))) ? Number(p.get('size')) : defaults.size;
     state.page = Math.min(10000, Math.max(1, parseInt(p.get('page'), 10) || 1));
@@ -72,7 +73,7 @@
 
   function csv(rows) {
     const cell = value => '"' + String(value ?? '').replace(/"/g, '""') + '"';
-    return [['System', 'System Family', 'First Mentioned Date', 'First Mention Page', 'Podcast & Page Timeline'], ...rows.map(r => [r.name, r.family, r.first, r.events[0]?.url || '', r.events.map(e => `${e.date} | ${e.kind} | ${e.title} | ${e.url}`).join('\n')])].map(row => row.map(cell).join(',')).join('\r\n');
+    return [['System', 'System Family', 'First Mentioned', 'References', 'Podcast & Page Timeline'], ...rows.map(r => [r.name, r.family, r.first ? `${r.first} | ${r.events[0].url}` : '', r.activity, r.events.map(e => `${e.date} | ${e.kind} | ${e.title} | ${e.url}`).join('\n')])].map(row => row.map(cell).join(',')).join('\r\n');
   }
   if (typeof module !== 'undefined' && module.exports) { module.exports = {derive, selectRows, readState, bounds, csv, validate}; return; }
 
@@ -107,8 +108,9 @@
       const label = `${e.title} · ${e.date} · ${kindLabels[e.kind]}`;
       marks.push(`<a class="mark ${e.kind}" href="${escape(e.url)}" style="left:${x}%;top:${7 + lane * 16}px" data-tooltip="${escape(label)}" aria-label="${escape(label)}"></a>`);
     }
-    const span = visible.length > 1 ? `<span class="life-span" style="left:${position(visible[0].date)}%;width:${position(visible.at(-1).date) - position(visible[0].date)}%"></span>` : '';
-    return `<div class="timeline" aria-label="${escape(row.name)} reference timeline">${span}${marks.join('')}</div><details class="references"><summary>${row.activity} references</summary><a class="podcast-drill" href="${PODCAST}/?systems=${encodeURIComponent(row.id)}">Filter podcast to this system ↗</a><ol>${row.events.map(e => `<li><a href="${escape(e.url)}">${escape(e.title)}</a><small>${e.date} · ${kindLabels[e.kind]}</small></li>`).join('')}</ol></details>`;
+    const span = visible.length ? `<span class="life-span" aria-hidden="true" style="left:${position(visible[0].date)}%;width:${position(visible.at(-1).date) - position(visible[0].date)}%"></span>` : '';
+    const activityLabel = visible.length ? `; indexed activity ${visible[0].date} to ${visible.at(-1).date}` : '; no dated activity through today';
+    return `<div class="timeline" aria-label="${escape(row.name)} reference timeline${activityLabel}">${span}${marks.join('')}</div><details class="references"><summary>View sources</summary><a class="podcast-drill" href="${PODCAST}/?systems=${encodeURIComponent(row.id)}">Filter podcast to this system ↗</a><ol>${row.events.map(e => `<li><a href="${escape(e.url)}">${escape(e.title)}</a><small>${e.date} · ${kindLabels[e.kind]}</small></li>`).join('')}</ol></details>`;
   }
 
   function syncURL() {
@@ -140,7 +142,7 @@
       th.setAttribute('aria-sort', active ? state.dir === 'asc' ? 'ascending' : 'descending' : 'none');
       th.querySelector('.sort-indicator').textContent = active ? state.dir === 'asc' ? '▲' : '▼' : '↕';
     });
-    $('rows').innerHTML = filtered.slice((state.page - 1) * state.size, state.page * state.size).map(r => `<tr id="${escape(r.id)}" style="--tag-color:${r.color}"><td class="system-name"><a href="${escape(r.url)}">${escape(r.name)}</a></td><td><button class="family row-family" data-family="${escape(r.group)}" aria-pressed="${state.families.includes(r.group)}">${escape(r.family)}</button></td><td class="first-date">${r.first || 'Unknown'}</td><td class="first-source">${r.events.length ? `<a href="${escape(r.events[0].url)}">${escape(r.events[0].title)}</a><small>${kindLabels[r.events[0].kind]}</small>` : 'No dated source'}</td><td class="timeline-cell">${timeline(r)}</td></tr>`).join('') || '<tr><td colspan="5" class="empty">No systems match these filters. Try clearing a filter.</td></tr>';
+    $('rows').innerHTML = filtered.slice((state.page - 1) * state.size, state.page * state.size).map(r => `<tr id="${escape(r.id)}" style="--tag-color:${r.color}"><td class="system-name"><a href="${escape(r.url)}">${escape(r.name)}</a></td><td><button class="family row-family" data-family="${escape(r.group)}" aria-pressed="${state.families.includes(r.group)}">${escape(r.family)}</button></td><td class="first-date">${r.first ? `<a href="${escape(r.events[0].url)}" title="${escape(r.events[0].title)} · ${kindLabels[r.events[0].kind]}">${r.first}</a>` : 'Unknown'}</td><td class="reference-count">${r.activity.toLocaleString()}</td><td class="timeline-cell">${timeline(r)}</td></tr>`).join('') || '<tr><td colspan="5" class="empty">No systems match these filters. Try clearing a filter.</td></tr>';
     $('pagination').hidden = totalPages <= 1;
     $('page-label').textContent = `Page ${state.page} of ${totalPages}`;
     document.querySelectorAll('[data-page]').forEach(b => { b.disabled = ['first', 'prev'].includes(b.dataset.page) ? state.page === 1 : state.page === totalPages; });
