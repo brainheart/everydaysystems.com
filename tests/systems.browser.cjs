@@ -29,7 +29,7 @@ const base = process.argv[2] || 'http://127.0.0.1:8765';
       return {left:parseFloat(span.style.left), width:parseFloat(span.style.width), height:span.offsetHeight, label:el.getAttribute('aria-label'), background:getComputedStyle(el,'::before').backgroundColor, color:getComputedStyle(span).backgroundColor};
     });
     assert.ok(band.left > 2 && band.left + band.width < 98, 'Activity band leaves gray before and after the dated references');
-    assert.ok(band.height > 40, 'Activity band covers all three reference tracks');
+    assert.equal(band.height,3, 'Activity span uses the original thin line');
     assert.notEqual(band.background,band.color);
     assert.match(band.label,/indexed activity 2004-07-06 to/);
     await page.locator('[data-sort="activity"]').click();

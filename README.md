@@ -11,7 +11,7 @@ stylesheet changes so GitHub Pages' CDN serves the new version.
 ## Systems explorer
 
 The table shows system, family, a first-mentioned date linking to its source,
-total References (sortable), and a shared timeline. The family-colored band
+total References (sortable), and a shared timeline. The thin family-colored line
 spans the first through latest dated reference, with gray outside that interval.
 Single-date activity uses a narrow marker; systems without dated sources have
 no colored interval. CSV uses the same five columns, retaining the date and

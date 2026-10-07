@@ -59,8 +59,8 @@ tbody tr:last-child td { border-bottom:0; }
 small { display:block; margin-top:4px; color:var(--muted); font-size:10px; }
 .timeline-cell { padding-top:5px; }
 .timeline { position:relative; min-width:330px; height:52px; }
-.timeline:before { content:""; position:absolute; top:3px; bottom:3px; left:2%; width:96%; background:#ededed; border-radius:3px; }
-.life-span { position:absolute; top:3px; bottom:3px; min-width:2px; background:color-mix(in srgb,var(--tag-color) 23%,white); border-inline:1px solid color-mix(in srgb,var(--tag-color) 55%,white); pointer-events:none; }
+.timeline:before { content:""; position:absolute; top:12px; left:2%; width:96%; border-top:1px solid #ddd; }
+.life-span { position:absolute; top:11px; height:3px; min-width:2px; background:color-mix(in srgb,var(--tag-color) 35%,white); pointer-events:none; }
 .mark { position:absolute; width:10px; height:10px; transform:translateX(-50%); border:2px solid var(--tag-color); border-radius:50%; background:var(--tag-color); z-index:1; }
 .mark:before { content:""; position:absolute; inset:-3px; }
 .mark.mention { background:white; }
