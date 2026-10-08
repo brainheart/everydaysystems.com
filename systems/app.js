@@ -98,15 +98,14 @@
     }
     for (const [key, events] of buckets) {
       const e = events[0], x = events.reduce((sum, item) => sum + position(item.date), 0) / events.length;
-      const lane = {focus: 0, mention: 1, web: 2}[e.kind];
       if (events.length > 1) {
         const id = `${row.id}-${key}`;
         clusters.set(id, events);
-        marks.push(`<button type="button" class="mark cluster ${e.kind}" style="left:${x}%;top:${7 + lane * 16}px" data-cluster="${escape(id)}" aria-haspopup="dialog" aria-expanded="false" aria-label="${events.length} ${kindLabels[e.kind]} references, ${events[0].date} to ${events.at(-1).date}; open source links">${events.length}</button>`);
+        marks.push(`<button type="button" class="mark cluster ${e.kind}" style="left:${x}%" data-cluster="${escape(id)}" aria-haspopup="dialog" aria-expanded="false" aria-label="${events.length} ${kindLabels[e.kind]} references, ${events[0].date} to ${events.at(-1).date}; open source links">${events.length}</button>`);
         continue;
       }
       const label = `${e.title} · ${e.date} · ${kindLabels[e.kind]}`;
-      marks.push(`<a class="mark ${e.kind}" href="${escape(e.url)}" style="left:${x}%;top:${7 + lane * 16}px" data-tooltip="${escape(label)}" aria-label="${escape(label)}"></a>`);
+      marks.push(`<a class="mark ${e.kind}" href="${escape(e.url)}" style="left:${x}%" data-tooltip="${escape(label)}" aria-label="${escape(label)}"></a>`);
     }
     const span = visible.length ? `<span class="life-span" aria-hidden="true" style="left:${position(visible[0].date)}%;width:${position(visible.at(-1).date) - position(visible[0].date)}%"></span>` : '';
     const activityLabel = visible.length ? `; indexed activity ${visible[0].date} to ${visible.at(-1).date}` : '; no dated activity through today';
