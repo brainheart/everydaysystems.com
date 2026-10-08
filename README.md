@@ -10,6 +10,13 @@ stylesheet changes so GitHub Pages' CDN serves the new version.
 
 ## Systems explorer
 
+The original Low Smoking page and its illustrations were restored at
+`/lowsmoking/` from the [January 12, 2026 Wayback snapshot](https://web.archive.org/web/20260112211137/https://everydaysystems.com/lowsmoking/).
+The illustrations come from the archive's September 2013 captures of
+`lowsmoking/faust.jpg` and `lowsmoking/low-smoking.png`. Original prose is
+preserved; layout and links use the current site. Its original publication date
+is unknown, so this undated homepage does not add a dated timeline reference.
+
 The table shows system, family, a first-mentioned date linking to its source,
 total References (sortable), and a shared timeline. The thin family-colored line
 spans the first through latest dated reference, with gray outside that interval.
